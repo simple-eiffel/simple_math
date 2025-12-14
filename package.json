@@ -1,0 +1,9 @@
+{
+  "name": "simple_math",
+  "version": "0.1.0",
+  "description": "Simple Math - Scientific computing for Eiffel: vectors, matrices, statistics, numerical methods",
+  "author": "Larry Rix",
+  "license": "MIT",
+  "category": "math",
+  "keywords": ["math", "statistics", "linear-algebra"]
+}
