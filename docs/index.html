@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simple_math - Scientific Computing for Eiffel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="simple_* logo" class="logo">
+        </div>
+        <h1>simple_math</h1>
+        <p class="tagline">Vectors, Matrices, Statistics, Numerical Methods</p>
+        <div class="badges">
+            <span class="badge badge-rfc">Service Layer</span>
+            <span class="badge badge-version">v1.0.0</span>
+            <span class="badge badge-license">MIT</span>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#api">API Reference</a></li>
+            <li><a href="https://github.com/simple-eiffel/simple_math">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>
+                <strong>simple_math</strong> provides scientific computing capabilities for Eiffel.
+                It includes vector and matrix operations, statistical analysis, and numerical methods
+                for integration, root finding, and interpolation.
+            </p>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+            <h3>Installation</h3>
+            <pre><code>&lt;library name="simple_math" location="$SIMPLE_MATH\simple_math.ecf"/&gt;</code></pre>
+
+            <h3>Basic Usage</h3>
+            <pre><code>local
+    math: SIMPLE_MATH
+    v1, v2: SIMPLE_VECTOR
+    m: SIMPLE_MATRIX
+    stats: SIMPLE_STATISTICS
+do
+    create math.make
+
+    -- Vectors
+    v1 := math.new_vector_3d (1.0, 2.0, 3.0)
+    v2 := math.new_vector_3d (4.0, 5.0, 6.0)
+    print (v1.dot (v2))  -- 32.0
+
+    -- Matrices
+    m := math.new_matrix_from_array (2, 2, &lt;&lt;1.0, 2.0, 3.0, 4.0&gt;&gt;)
+    print (m.determinant) -- -2.0
+
+    -- Statistics
+    stats := math.new_statistics_from_array (&lt;&lt;1.0, 2.0, 3.0, 4.0, 5.0&gt;&gt;)
+    print (stats.mean)   -- 3.0
+    print (stats.median) -- 3.0
+end</code></pre>
+        </section>
+
+        <section id="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Vectors</h4>
+                    <p>N-dimensional vectors, dot/cross products</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Matrices</h4>
+                    <p>Multiply, transpose, inverse, determinant</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Statistics</h4>
+                    <p>Mean, median, variance, correlation</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Regression</h4>
+                    <p>Linear regression with R-squared</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Integration</h4>
+                    <p>Trapezoidal and Simpson's rule</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Root Finding</h4>
+                    <p>Bisection, Newton-Raphson</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+
+            <div class="api-section">
+                <h3>Vector Operations</h3>
+                <table>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                    <tr><td><code>new_vector (n)</code></td><td>Create zero vector</td></tr>
+                    <tr><td><code>new_vector_2d (x, y)</code></td><td>Create 2D vector</td></tr>
+                    <tr><td><code>new_vector_3d (x, y, z)</code></td><td>Create 3D vector</td></tr>
+                    <tr><td><code>v1 + v2</code></td><td>Vector addition</td></tr>
+                    <tr><td><code>v1.dot (v2)</code></td><td>Dot product</td></tr>
+                    <tr><td><code>v1.cross (v2)</code></td><td>Cross product (3D)</td></tr>
+                    <tr><td><code>v.magnitude</code></td><td>Euclidean length</td></tr>
+                    <tr><td><code>v.normalized</code></td><td>Unit vector</td></tr>
+                </table>
+            </div>
+
+            <div class="api-section">
+                <h3>Matrix Operations</h3>
+                <table>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                    <tr><td><code>new_matrix (r, c)</code></td><td>Create r x c matrix</td></tr>
+                    <tr><td><code>new_identity_matrix (n)</code></td><td>Create n x n identity</td></tr>
+                    <tr><td><code>m1 * m2</code></td><td>Matrix multiplication</td></tr>
+                    <tr><td><code>m.transposed</code></td><td>Transpose matrix</td></tr>
+                    <tr><td><code>m.determinant</code></td><td>Calculate determinant</td></tr>
+                    <tr><td><code>m.inverse</code></td><td>Calculate inverse</td></tr>
+                    <tr><td><code>m.trace</code></td><td>Sum of diagonal</td></tr>
+                </table>
+            </div>
+
+            <div class="api-section">
+                <h3>Statistics</h3>
+                <table>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                    <tr><td><code>mean</code></td><td>Arithmetic mean</td></tr>
+                    <tr><td><code>median</code></td><td>Median value</td></tr>
+                    <tr><td><code>variance</code></td><td>Population variance</td></tr>
+                    <tr><td><code>standard_deviation</code></td><td>Population std dev</td></tr>
+                    <tr><td><code>percentile (p)</code></td><td>Value at percentile p</td></tr>
+                    <tr><td><code>correlation (other)</code></td><td>Pearson correlation</td></tr>
+                    <tr><td><code>linear_regression (y)</code></td><td>Returns [slope, intercept, r²]</td></tr>
+                </table>
+            </div>
+
+            <div class="api-section">
+                <h3>Numerical Methods</h3>
+                <table>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                    <tr><td><code>sin, cos, tan</code></td><td>Trigonometric functions</td></tr>
+                    <tr><td><code>exp, log, log10</code></td><td>Exponential/logarithmic</td></tr>
+                    <tr><td><code>sqrt, pow</code></td><td>Power functions</td></tr>
+                    <tr><td><code>trapezoidal (f, a, b, n)</code></td><td>Numerical integration</td></tr>
+                    <tr><td><code>simpson (f, a, b, n)</code></td><td>Simpson's rule integration</td></tr>
+                    <tr><td><code>bisection (f, a, b, tol, max)</code></td><td>Root finding</td></tr>
+                    <tr><td><code>newton_raphson (f, df, x0, tol, max)</code></td><td>Newton-Raphson root finding</td></tr>
+                </table>
+            </div>
+
+            <div class="api-section">
+                <h3>Constants</h3>
+                <table>
+                    <tr><th>Constant</th><th>Value</th></tr>
+                    <tr><td><code>pi</code></td><td>3.14159265...</td></tr>
+                    <tr><td><code>e</code></td><td>2.71828182...</td></tr>
+                    <tr><td><code>golden_ratio</code></td><td>1.61803398...</td></tr>
+                    <tr><td><code>sqrt_2</code></td><td>1.41421356...</td></tr>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Part of the <a href="https://github.com/simple-eiffel">simple_*</a> library collection</p>
+        <p class="copyright">MIT License - Copyright (c) 2024-2025, Larry Rix</p>
+    </footer>
+</body>
+</html>
