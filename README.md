@@ -11,8 +11,18 @@ Scientific computing for Eiffel: vectors, matrices, statistics, numerical method
 
 ## Installation
 
+Set the ecosystem environment variable (one-time setup for all simple_* libraries):
+```bash
+# Windows
+set SIMPLE_EIFFEL=D:\prod
+
+# Linux/macOS
+export SIMPLE_EIFFEL=/path/to/prod
+```
+
+Add to your ECF file:
 ```xml
-<library name="simple_math" location="$SIMPLE_MATH\simple_math.ecf"/>
+<library name="simple_math" location="$SIMPLE_EIFFEL/simple_math/simple_math.ecf"/>
 ```
 
 ## Quick Start
