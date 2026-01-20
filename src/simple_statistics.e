@@ -405,10 +405,9 @@ feature -- Status report
 feature {NONE} -- Implementation
 
 	sorted_data: ARRAYED_LIST [REAL_64]
-			-- Sorted copy of data using simple insertion sort.
+			-- Sorted copy of data.
 		local
-			i, j: INTEGER
-			l_key: REAL_64
+			l_sorter: SIMPLE_SORTER [REAL_64]
 		do
 			-- Copy data to result
 			create Result.make (count)
@@ -416,17 +415,15 @@ feature {NONE} -- Implementation
 				Result.extend (data.item)
 				data.forth
 			end
-			-- Insertion sort
-			from i := 2 until i > Result.count loop
-				l_key := Result.i_th (i)
-				j := i - 1
-				from until j < 1 or else Result.i_th (j) <= l_key loop
-					Result.put_i_th (Result.i_th (j), j + 1)
-					j := j - 1
-				end
-				Result.put_i_th (l_key, j + 1)
-				i := i + 1
-			end
+			-- Sort using simple_sorter
+			create l_sorter.make
+			l_sorter.sort_by (Result, agent real_identity)
+		end
+
+	real_identity (a_value: REAL_64): REAL_64
+			-- Identity function for REAL_64 key extraction.
+		do
+			Result := a_value
 		end
 
 end
