@@ -68,6 +68,19 @@ feature {NONE} -- Initialization
 			unit_at_index: item (a_index) = 1.0
 		end
 
+feature -- Model
+
+	model: MML_SEQUENCE [REAL_64]
+			-- Mathematical model of vector as sequence.
+		do
+			create Result
+			across 1 |..| dimension as i loop
+				Result := Result & elements.item (i)
+			end
+		ensure
+			count_matches: Result.count = dimension
+		end
+
 feature -- Access
 
 	dimension: INTEGER
@@ -97,6 +110,8 @@ feature -- Element change
 			elements.put (a_value, i)
 		ensure
 			value_set: item (i) = a_value
+			model_updated: model |=| old model.replaced_at (i, a_value)
+			dimension_unchanged: dimension = old dimension
 		end
 
 feature -- Status report
@@ -147,6 +162,9 @@ feature -- Basic operations
 			end
 		ensure
 			result_dimension: Result.dimension = dimension
+			elementwise_sum: across 1 |..| dimension as idx all
+				Result.item (idx) = item (idx) + other.item (idx)
+			end
 		end
 
 	minus alias "-" (other: SIMPLE_VECTOR): SIMPLE_VECTOR
@@ -163,6 +181,9 @@ feature -- Basic operations
 			end
 		ensure
 			result_dimension: Result.dimension = dimension
+			elementwise_diff: across 1 |..| dimension as idx all
+				Result.item (idx) = item (idx) - other.item (idx)
+			end
 		end
 
 	scaled alias "*" (a_scalar: REAL_64): SIMPLE_VECTOR
@@ -177,6 +198,9 @@ feature -- Basic operations
 			end
 		ensure
 			result_dimension: Result.dimension = dimension
+			elementwise_scaled: across 1 |..| dimension as idx all
+				Result.item (idx) = item (idx) * a_scalar
+			end
 		end
 
 	negated alias "-": SIMPLE_VECTOR
@@ -191,6 +215,9 @@ feature -- Basic operations
 			end
 		ensure
 			result_dimension: Result.dimension = dimension
+			elementwise_negated: across 1 |..| dimension as idx all
+				Result.item (idx) = -item (idx)
+			end
 		end
 
 	dot (other: SIMPLE_VECTOR): REAL_64
@@ -217,6 +244,9 @@ feature -- Basic operations
 			Result.put (item (1) * other.item (2) - item (2) * other.item (1), 3)
 		ensure
 			result_dimension: Result.dimension = 3
+			cross_x: Result.item (1) = item (2) * other.item (3) - item (3) * other.item (2)
+			cross_y: Result.item (2) = item (3) * other.item (1) - item (1) * other.item (3)
+			cross_z: Result.item (3) = item (1) * other.item (2) - item (2) * other.item (1)
 		end
 
 feature -- Metrics
@@ -345,5 +375,7 @@ feature {NONE} -- Implementation
 invariant
 	positive_dimension: dimension > 0
 	elements_match: elements.count = dimension
+	elements_attached: elements /= Void
+	model_consistent: model.count = dimension
 
 end

@@ -84,6 +84,29 @@ feature {NONE} -- Initialization
 			cols_set: cols = a_cols
 		end
 
+feature -- Model
+
+	model: MML_SEQUENCE [MML_SEQUENCE [REAL_64]]
+			-- Mathematical model of matrix as sequence of row sequences.
+		local
+			l_row: MML_SEQUENCE [REAL_64]
+			i, j: INTEGER
+		do
+			create Result
+			from i := 1 until i > rows loop
+				create l_row
+				from j := 1 until j > cols loop
+					l_row := l_row & item (i, j)
+					j := j + 1
+				end
+				Result := Result & l_row
+				i := i + 1
+			end
+		ensure
+			row_count: Result.count = rows
+			col_count: across 1 |..| rows as idx all Result [idx].count = cols end
+		end
+
 feature -- Access
 
 	rows: INTEGER
@@ -160,6 +183,7 @@ feature -- Element change
 			data.put (a_value, (i - 1) * cols + j)
 		ensure
 			value_set: item (i, j) = a_value
+			dimensions_unchanged: rows = old rows and cols = old cols
 		end
 
 	set_row (i: INTEGER; a_vector: SIMPLE_VECTOR)
@@ -174,6 +198,9 @@ feature -- Element change
 				put (a_vector.item (j), i, j)
 				j := j + 1
 			end
+		ensure
+			row_set: across 1 |..| cols as jdx all item (i, jdx) = a_vector.item (jdx) end
+			dimensions_unchanged: rows = old rows and cols = old cols
 		end
 
 	set_column (j: INTEGER; a_vector: SIMPLE_VECTOR)
@@ -188,6 +215,9 @@ feature -- Element change
 				put (a_vector.item (i), i, j)
 				i := i + 1
 			end
+		ensure
+			column_set: across 1 |..| rows as idx all item (idx, j) = a_vector.item (idx) end
+			dimensions_unchanged: rows = old rows and cols = old cols
 		end
 
 feature -- Status report
@@ -301,6 +331,11 @@ feature -- Basic operations
 		ensure
 			result_rows: Result.rows = rows
 			result_cols: Result.cols = cols
+			elementwise_sum: across 1 |..| rows as ri all
+				across 1 |..| cols as ci all
+					Result.item (ri, ci) = item (ri, ci) + other.item (ri, ci)
+				end
+			end
 		end
 
 	minus alias "-" (other: SIMPLE_MATRIX): SIMPLE_MATRIX
@@ -322,6 +357,11 @@ feature -- Basic operations
 		ensure
 			result_rows: Result.rows = rows
 			result_cols: Result.cols = cols
+			elementwise_diff: across 1 |..| rows as ri all
+				across 1 |..| cols as ci all
+					Result.item (ri, ci) = item (ri, ci) - other.item (ri, ci)
+				end
+			end
 		end
 
 	product alias "*" (other: SIMPLE_MATRIX): SIMPLE_MATRIX
@@ -366,6 +406,11 @@ feature -- Basic operations
 		ensure
 			result_rows: Result.rows = rows
 			result_cols: Result.cols = cols
+			elementwise_scaled: across 1 |..| rows as ri all
+				across 1 |..| cols as ci all
+					Result.item (ri, ci) = item (ri, ci) * a_scalar
+				end
+			end
 		end
 
 	multiply_vector (a_vector: SIMPLE_VECTOR): SIMPLE_VECTOR
@@ -406,6 +451,11 @@ feature -- Basic operations
 		ensure
 			result_rows: Result.rows = cols
 			result_cols: Result.cols = rows
+			transposed_elements: across 1 |..| rows as ri all
+				across 1 |..| cols as ci all
+					Result.item (ci, ri) = item (ri, ci)
+				end
+			end
 		end
 
 feature -- Linear algebra
@@ -614,5 +664,8 @@ invariant
 	positive_rows: rows > 0
 	positive_cols: cols > 0
 	data_size: data.count = rows * cols
+	data_attached: data /= Void
+	model_rows: model.count = rows
+	model_cols: across 1 |..| rows as idx all model [idx].count = cols end
 
 end

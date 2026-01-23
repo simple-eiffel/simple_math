@@ -18,6 +18,20 @@ feature {NONE} -- Initialization
 			create {ARRAYED_LIST [REAL_64]} data.make (0)
 		end
 
+feature -- Model
+
+	model: MML_SEQUENCE [REAL_64]
+			-- Mathematical model of statistics data as sequence.
+		do
+			create Result
+			from data.start until data.after loop
+				Result := Result & data.item
+				data.forth
+			end
+		ensure
+			count_matches: Result.count = count
+		end
+
 feature -- Access
 
 	count: INTEGER
@@ -37,6 +51,7 @@ feature -- Element change
 			data.extend (a_value)
 		ensure
 			count_increased: count = old count + 1
+			model_extended: model |=| (old model).extended (a_value)
 		end
 
 	add_all (a_values: ARRAY [REAL_64])
@@ -58,6 +73,7 @@ feature -- Element change
 			data.wipe_out
 		ensure
 			empty: count = 0
+			model_empty: model.is_empty
 		end
 
 feature -- Central tendency
@@ -425,5 +441,10 @@ feature {NONE} -- Implementation
 		do
 			Result := a_value
 		end
+
+invariant
+	data_attached: data /= Void
+	count_non_negative: count >= 0
+	model_consistent: model.count = count
 
 end
