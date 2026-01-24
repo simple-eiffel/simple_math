@@ -1,0 +1,463 @@
+note
+	description: "Facade class for simple_math library - numerical methods and factory"
+	author: "Larry Rix"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class interface
+	SIMPLE_MATH
+
+create 
+	make
+			-- Initialize math library.
+
+feature -- Access
+
+	generating_type: TYPE [detachable SIMPLE_MATH]
+			-- Type of current object
+			-- (type of which it is a direct instance)
+			-- (from ANY)
+		ensure -- from ANY
+			generating_type_not_void: Result /= Void
+
+	generator: STRING_8
+			-- Name of current object's generating class
+			-- (base class of the type of which it is a direct instance)
+			-- (from ANY)
+		ensure -- from ANY
+			generator_not_void: Result /= Void
+			generator_not_empty: not Result.is_empty
+	
+feature -- Comparison
+
+	frozen deep_equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void
+			-- or attached to isomorphic object structures?
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			shallow_implies_deep: standard_equal (a, b) implies Result
+			both_or_none_void: (a = Void) implies (Result = (b = Void))
+			same_type: (Result and (a /= Void)) implies (b /= Void and then a.same_type (b))
+			symmetric: Result implies deep_equal (b, a)
+
+	frozen equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void or attached
+			-- to objects considered equal?
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			definition: Result = (a = Void and b = Void) or else ((a /= Void and b /= Void) and then a.is_equal (b))
+
+	frozen is_deep_equal alias "≡≡≡" (other: SIMPLE_MATH): BOOLEAN
+			-- Are `Current` and `other` attached to isomorphic object structures?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			shallow_implies_deep: standard_is_equal (other) implies Result
+			same_type: Result implies same_type (other)
+			symmetric: Result implies other.is_deep_equal (Current)
+
+	is_equal (other: SIMPLE_MATH): BOOLEAN
+			-- Is `other` attached to an object considered
+			-- equal to current object?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			symmetric: Result implies other ~ Current
+			consistent: standard_is_equal (other) implies Result
+
+	frozen standard_equal (a: detachable ANY; b: like arg #1): BOOLEAN
+			-- Are `a` and `b` either both void or attached to
+			-- field-by-field identical objects of the same type?
+			-- Always uses default object comparison criterion.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			definition: Result = (a = Void and b = Void) or else ((a /= Void and b /= Void) and then a.standard_is_equal (b))
+
+	frozen standard_is_equal alias "≜" (other: SIMPLE_MATH): BOOLEAN
+			-- Is `other` attached to an object of the same type
+			-- as current object, and field-by-field identical to it?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			same_type: Result implies same_type (other)
+			symmetric: Result implies other.standard_is_equal (Current)
+	
+feature -- Status report
+
+	conforms_to (other: ANY): BOOLEAN
+			-- Does type of current object conform to type
+			-- of `other` (as per Eiffel: The Language, chapter 13)?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+
+	same_type (other: ANY): BOOLEAN
+			-- Is type of current object identical to type of `other`?
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			definition: Result = (conforms_to (other) and other.conforms_to (Current))
+	
+feature -- Duplication
+
+	copy (other: SIMPLE_MATH)
+			-- Update current object using fields of object attached
+			-- to `other`, so as to yield equal objects.
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+			type_identity: same_type (other)
+		ensure -- from ANY
+			is_equal: Current ~ other
+
+	frozen deep_copy (other: SIMPLE_MATH)
+			-- Effect equivalent to that of:
+			--		`copy` (`other` . `deep_twin`)
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+		ensure -- from ANY
+			deep_equal: deep_equal (Current, other)
+
+	frozen deep_twin: SIMPLE_MATH
+			-- New object structure recursively duplicated from Current.
+			-- (from ANY)
+		ensure -- from ANY
+			deep_twin_not_void: Result /= Void
+			deep_equal: deep_equal (Current, Result)
+
+	frozen standard_copy (other: SIMPLE_MATH)
+			-- Copy every field of `other` onto corresponding field
+			-- of current object.
+			-- (from ANY)
+		require -- from ANY
+			other_not_void: other /= Void
+			type_identity: same_type (other)
+		ensure -- from ANY
+			is_standard_equal: standard_is_equal (other)
+
+	frozen standard_twin: SIMPLE_MATH
+			-- New object field-by-field identical to `other`.
+			-- Always uses default copying semantics.
+			-- (from ANY)
+		ensure -- from ANY
+			standard_twin_not_void: Result /= Void
+			equal: standard_equal (Result, Current)
+
+	frozen twin: SIMPLE_MATH
+			-- New object equal to `Current`
+			-- `twin` calls `copy`; to change copying/twinning semantics, redefine `copy`.
+			-- (from ANY)
+		ensure -- from ANY
+			twin_not_void: Result /= Void
+			is_equal: Result ~ Current
+	
+feature -- Basic operations
+
+	frozen default: detachable SIMPLE_MATH
+			-- Default value of object's type
+			-- (from ANY)
+
+	frozen default_pointer: POINTER
+			-- Default value of type `POINTER`
+			-- (Avoid the need to write `p`.`default` for
+			-- some `p` of type `POINTER`.)
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+
+	default_rescue
+			-- Process exception for routines with no Rescue clause.
+			-- (Default: do nothing.)
+			-- (from ANY)
+
+	frozen do_nothing
+			-- Execute a null action.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+	
+feature -- Exponential and logarithmic
+
+	cbrt (x: REAL_64): REAL_64
+			-- Cube root.
+
+	exp (x: REAL_64): REAL_64
+			-- e raised to power `x`.
+
+	log (x: REAL_64): REAL_64
+			-- Natural logarithm.
+		require
+			positive: x > 0.to_double
+
+	log10 (x: REAL_64): REAL_64
+			-- Base-10 logarithm.
+		require
+			positive: x > 0.to_double
+
+	log2 (x: REAL_64): REAL_64
+			-- Base-2 logarithm.
+		require
+			positive: x > 0.to_double
+
+	pow (base, exponent: REAL_64): REAL_64
+			-- `base` raised to `exponent`.
+
+	sqrt (x: REAL_64): REAL_64
+			-- Square root.
+		require
+			non_negative: x >= 0.to_double
+	
+feature -- Interpolation
+
+	lagrange_interpolate (x_points, y_points: ARRAY [REAL_64]; x: REAL_64): REAL_64
+			-- Lagrange polynomial interpolation at `x`.
+		require
+			same_count: x_points.count = y_points.count
+			not_empty: x_points.count > 0
+
+	linear_interpolate (x1, y1, x2, y2, x: REAL_64): REAL_64
+			-- Linear interpolation at `x`.
+		require
+			different_x: (x2 - x1).abs > 1.0e-15
+	
+feature -- Matrix factory
+
+	new_identity_matrix (a_size: INTEGER_32): SIMPLE_MATRIX
+			-- Create identity matrix.
+		require
+			positive_size: a_size > 0
+		ensure
+			square: Result.rows = Result.cols
+			size_set: Result.rows = a_size
+
+	new_matrix (a_rows, a_cols: INTEGER_32): SIMPLE_MATRIX
+			-- Create zero matrix.
+		require
+			positive_rows: a_rows > 0
+			positive_cols: a_cols > 0
+		ensure
+			rows_set: Result.rows = a_rows
+			cols_set: Result.cols = a_cols
+
+	new_matrix_from_array (a_rows, a_cols: INTEGER_32; a_values: ARRAY [REAL_64]): SIMPLE_MATRIX
+			-- Create matrix from row-major array.
+		require
+			positive_rows: a_rows > 0
+			positive_cols: a_cols > 0
+			correct_size: a_values.count = a_rows * a_cols
+		ensure
+			rows_set: Result.rows = a_rows
+			cols_set: Result.cols = a_cols
+	
+feature -- Numerical constants
+
+	E: REAL_64 = 2.71828182845904523536
+			-- Euler's number.
+
+	Golden_ratio: REAL_64 = 1.61803398874989484820
+			-- Golden ratio (phi).
+
+	Pi: REAL_64 = 3.14159265358979323846
+			-- Pi constant.
+
+	Sqrt_2: REAL_64 = 1.41421356237309504880
+			-- Square root of 2.
+	
+feature -- Numerical integration
+
+	simpson (f: FUNCTION [REAL_64, REAL_64]; a, b: REAL_64; n: INTEGER_32): REAL_64
+			-- Integrate `f` from `a` to `b` using Simpson's rule with `n` intervals.
+		require
+			valid_interval: a < b
+			even_intervals: n > 0 and n \\ 2 = 0
+
+	trapezoidal (f: FUNCTION [REAL_64, REAL_64]; a, b: REAL_64; n: INTEGER_32): REAL_64
+			-- Integrate `f` from `a` to `b` using trapezoidal rule with `n` intervals.
+		require
+			valid_interval: a < b
+			positive_intervals: n > 0
+	
+feature -- Output
+
+	Io: STD_FILES
+			-- Handle to standard file setup
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			io_not_void: Result /= Void
+
+	out: STRING_8
+			-- New string containing terse printable representation
+			-- of current object
+			-- (from ANY)
+		ensure -- from ANY
+			out_not_void: Result /= Void
+
+	print (o: detachable ANY)
+			-- Write terse external representation of `o`
+			-- on standard output.
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+
+	frozen tagged_out: STRING_8
+			-- New string containing terse printable representation
+			-- of current object
+			-- (from ANY)
+		ensure -- from ANY
+			tagged_out_not_void: Result /= Void
+	
+feature -- Platform
+
+	Operating_environment: OPERATING_ENVIRONMENT
+			-- Objects available from the operating system
+			-- (from ANY)
+		ensure -- from ANY
+			instance_free: class
+			operating_environment_not_void: Result /= Void
+	
+feature -- Root finding
+
+	bisection (f: FUNCTION [REAL_64, REAL_64]; a, b: REAL_64; tolerance: REAL_64; max_iterations: INTEGER_32): REAL_64
+			-- Find root of `f` in [a,b] using bisection method.
+		require
+			valid_interval: a < b
+			opposite_signs: f.item ([a]) * f.item ([b]) < 0.to_double
+			positive_tolerance: tolerance > 0.to_double
+			positive_iterations: max_iterations > 0
+
+	newton_raphson (f, df: FUNCTION [REAL_64, REAL_64]; x0: REAL_64; tolerance: REAL_64; max_iterations: INTEGER_32): REAL_64
+			-- Find root using Newton-Raphson method.
+			-- `f` is the function, `df` is its derivative.
+		require
+			positive_tolerance: tolerance > 0.to_double
+			positive_iterations: max_iterations > 0
+	
+feature -- Statistics factory
+
+	new_statistics: SIMPLE_STATISTICS
+			-- Create statistics calculator.
+
+	new_statistics_from_array (a_values: ARRAY [REAL_64]): SIMPLE_STATISTICS
+			-- Create statistics from array.
+		ensure
+			count_set: Result.count = a_values.count
+	
+feature -- Trigonometric functions
+
+	acos (x: REAL_64): REAL_64
+			-- Arc cosine of `x`.
+		require
+			valid_range: x >= -1.0 and x <= 1.0
+
+	asin (x: REAL_64): REAL_64
+			-- Arc sine of `x`.
+		require
+			valid_range: x >= -1.0 and x <= 1.0
+
+	atan (x: REAL_64): REAL_64
+			-- Arc tangent of `x`.
+
+	atan2 (y, x: REAL_64): REAL_64
+			-- Arc tangent of y/x using signs to determine quadrant.
+
+	cos (x: REAL_64): REAL_64
+			-- Cosine of `x` (radians).
+
+	degrees_to_radians (d: REAL_64): REAL_64
+			-- Convert degrees to radians.
+
+	radians_to_degrees (r: REAL_64): REAL_64
+			-- Convert radians to degrees.
+
+	sin (x: REAL_64): REAL_64
+			-- Sine of `x` (radians).
+
+	tan (x: REAL_64): REAL_64
+			-- Tangent of `x` (radians).
+	
+feature -- Utility functions
+
+	binomial (n, k: INTEGER_32): INTEGER_64
+			-- Binomial coefficient C(n,k).
+		require
+			valid_n: n >= 0
+			valid_k: k >= 0 and k <= n
+
+	clamp (value, min_val, max_val: REAL_64): REAL_64
+			-- Clamp `value` to [min_val, max_val].
+		require
+			valid_range: min_val <= max_val
+		ensure
+			in_range: Result >= min_val and Result <= max_val
+
+	factorial (n: INTEGER_32): INTEGER_64
+			-- Factorial of `n`.
+		require
+			non_negative: n >= 0
+
+	gcd (a, b: INTEGER_32): INTEGER_32
+			-- Greatest common divisor.
+		require
+			positive_a: a > 0
+			positive_b: b > 0
+		ensure
+			positive: Result > 0
+
+	is_close (a, b: REAL_64; tolerance: REAL_64): BOOLEAN
+			-- Are `a` and `b` within `tolerance`?
+		require
+			positive_tolerance: tolerance >= 0.to_double
+
+	lcm (a, b: INTEGER_32): INTEGER_32
+			-- Least common multiple.
+		require
+			positive_a: a > 0
+			positive_b: b > 0
+		ensure
+			positive: Result > 0
+
+	lerp (a, b, t: REAL_64): REAL_64
+			-- Linear interpolation between `a` and `b` at parameter `t`.
+	
+feature -- Vector factory
+
+	new_vector (a_dimension: INTEGER_32): SIMPLE_VECTOR
+			-- Create zero vector.
+		require
+			positive_dimension: a_dimension > 0
+		ensure
+			dimension_set: Result.dimension = a_dimension
+
+	new_vector_2d (x, y: REAL_64): SIMPLE_VECTOR
+			-- Create 2D vector.
+		ensure
+			dimension_2: Result.dimension = 2
+
+	new_vector_3d (x, y, z: REAL_64): SIMPLE_VECTOR
+			-- Create 3D vector.
+		ensure
+			dimension_3: Result.dimension = 3
+
+	new_vector_from_array (a_values: ARRAY [REAL_64]): SIMPLE_VECTOR
+			-- Create vector from array.
+		require
+			not_empty: a_values.count > 0
+		ensure
+			dimension_set: Result.dimension = a_values.count
+	
+invariant
+		-- from ANY
+	reflexive_equality: standard_is_equal (Current)
+	reflexive_conformance: conforms_to (Current)
+
+end -- class SIMPLE_MATH
+
