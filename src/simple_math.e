@@ -389,7 +389,7 @@ feature -- Interpolation
 			not_empty: x_points.count > 0
 		local
 			n, i, j: INTEGER
-			l_term, l_prod: REAL_64
+			l_prod: REAL_64
 		do
 			n := x_points.count
 
