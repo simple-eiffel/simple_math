@@ -661,11 +661,16 @@ feature {NONE} -- Implementation
 			-- Row-major storage for matrix elements.
 
 invariant
+	-- Per-element and model clauses were removed 2026-09-11: an
+	-- invariant runs on every feature call, so a clause that walks
+	-- the collection or builds its MML model makes every call O(n)
+	-- and a walk over the collection O(n^2) (simple_json read a
+	-- 1434-element array in 158 s under DBC). Models belong in
+	-- postconditions of the features that change them.
 	positive_rows: rows > 0
 	positive_cols: cols > 0
 	data_size: data.count = rows * cols
 	data_attached: data /= Void
 	model_rows: model.count = rows
-	model_cols: across 1 |..| rows as idx all model [idx].count = cols end
 
 end
