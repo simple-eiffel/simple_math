@@ -404,6 +404,26 @@ feature -- Test: Math Facade
 			check log10_100: (m.log10 (100.0) - 2.0).abs < 0.0001 end
 		end
 
+	test_math_tanh_erf_sigmoid
+			-- tanh, erf and sigmoid against reference values (Python math module, 17 digits) to 1e-12.
+		local
+			m: SIMPLE_MATH
+		do
+			create m.make
+			check tanh_0: m.tanh (0.0) = 0.0 end
+			check tanh_1: (m.tanh (1.0) - 0.7615941559557649).abs < 1.0e-12 end
+			check tanh_neg_2: (m.tanh (-2.0) + 0.9640275800758169).abs < 1.0e-12 end
+			check tanh_large: m.tanh (50.0) = 1.0 end
+			check erf_0: m.erf (0.0) = 0.0 end
+			check erf_1: (m.erf (1.0) - 0.8427007929497149).abs < 1.0e-12 end
+			check erf_neg_half: (m.erf (-0.5) + 0.5204998778130465).abs < 1.0e-12 end
+			check erf_3: (m.erf (3.0) - 0.9999779095030014).abs < 1.0e-12 end
+			check sigmoid_0: m.sigmoid (0.0) = 0.5 end
+			check sigmoid_2: (m.sigmoid (2.0) - 0.8807970779778823).abs < 1.0e-12 end
+			check sigmoid_neg_800_no_overflow: m.sigmoid (-800.0) >= 0.0 and m.sigmoid (-800.0) < 1.0e-300 end
+			check sigmoid_800: m.sigmoid (800.0) = 1.0 end
+		end
+
 	test_math_sqrt
 			-- Test square root.
 		local

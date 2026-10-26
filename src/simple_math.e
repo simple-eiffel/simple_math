@@ -200,6 +200,39 @@ feature -- Trigonometric functions
 			Result := r * 180.0 / pi
 		end
 
+feature -- Hyperbolic and special functions
+
+	tanh (x: REAL_64): REAL_64
+			-- Hyperbolic tangent of `x' (C99 libm).
+		do
+			Result := c_tanh (x)
+		ensure
+			bounded: -1.0 <= Result and Result <= 1.0
+		end
+
+	erf (x: REAL_64): REAL_64
+			-- Error function of `x' (C99 libm): 2/√π ∫₀ˣ e^(−t²) dt.
+		do
+			Result := c_erf (x)
+		ensure
+			bounded: -1.0 <= Result and Result <= 1.0
+		end
+
+	sigmoid (x: REAL_64): REAL_64
+			-- Logistic function 1 / (1 + e^(−x)), computed without overflow for large |x|.
+		local
+			l_e: REAL_64
+		do
+			if x >= 0.0 then
+				Result := 1.0 / (1.0 + {DOUBLE_MATH}.exp (-x))
+			else
+				l_e := {DOUBLE_MATH}.exp (x)
+				Result := l_e / (1.0 + l_e)
+			end
+		ensure
+			bounded: 0.0 <= Result and Result <= 1.0
+		end
+
 feature -- Exponential and logarithmic
 
 	exp (x: REAL_64): REAL_64
@@ -494,6 +527,22 @@ feature -- Utility functions
 			positive_tolerance: tolerance >= 0
 		do
 			Result := (a - b).abs <= tolerance
+		end
+
+feature {NONE} -- C externals (libm; instant, so unmarked)
+
+	c_tanh (x: REAL_64): REAL_64
+		external
+			"C inline use <math.h>"
+		alias
+			"return tanh($x);"
+		end
+
+	c_erf (x: REAL_64): REAL_64
+		external
+			"C inline use <math.h>"
+		alias
+			"return erf($x);"
 		end
 
 end
