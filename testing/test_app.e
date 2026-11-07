@@ -87,6 +87,7 @@ feature {NONE} -- Initialization
 			io.put_string ("-----------------%N")
 			run_test (agent tests.test_math_trig, "test_math_trig")
 			run_test (agent tests.test_math_exp_log, "test_math_exp_log")
+			run_test (agent tests.test_math_tanh_erf_sigmoid, "test_math_tanh_erf_sigmoid")
 			run_test (agent tests.test_math_sqrt, "test_math_sqrt")
 			run_test (agent tests.test_math_factorial, "test_math_factorial")
 			run_test (agent tests.test_math_binomial, "test_math_binomial")
